@@ -1,0 +1,74 @@
+/* Form Parts
+-----------------------------------------------------*/
+div.formCommon {
+	background-color: transparent;
+}
+
+.formCommon input[type="password"],
+.formCommon input[type="text"],
+.formCommon textarea {
+	border: 1px solid #b2b2b2;
+	border-radius: 4px;
+	width: 100%;
+	padding: 5px 10px;
+}
+.formCommon .form-inline input{
+	width: 160px;
+}
+.formCommon div.text-with-suffix {
+	border: 1px solid #b2b2b2;
+	border-radius: 4px;
+	background-color: white;
+	display: table;
+	border-collapse: separate;
+	width: 100%;
+}
+.formCommon .text-with-suffix input[type="text"]{
+	border: none;
+	float: left;
+	width: 100%;
+	display: table-cell;
+}
+.formCommon .text-with-suffix span.suffix {
+	font-size: 8px;
+	width: 1%;
+	white-space: nowrap;
+	display: table-cell;
+	vertical-align: middle;
+}
+
+.formCommon input[type="text"],
+.formCommon input[type="password"]
+{
+	height: 44px;
+}
+.formCommon button.button-strong {
+  height: 44px;
+  width: 100%;
+}
+.formCommon dt {
+  line-height: 44px;
+}
+
+.formCommon .date-picker > div {
+  display: inline-block;
+}
+
+form .formConfirmation .panel-body {
+	margin: 0px;
+	padding-top: 24px;
+}
+
+.formConfirmation dd {
+	border-bottom: 1px solid #cccccc;
+	color: #333333;
+	font-size: 18px;
+}
+
+@media (min-width: 768px) {
+	.formConfirmation dd {
+		border-bottom: none;
+		padding-bottom: 24px;
+		font-size: 20px;
+	}
+}

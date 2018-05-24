@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="ja">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link href='./css/bootstrap-4.0.0.min.css' rel='stylesheet' type='text/css'>
+  <link href="./css/fontawesone-5.0.8.all.css" rel="stylesheet">
+  <link rel="stylesheet" href="./css/personium.css">
+  <link rel="stylesheet" href="./css/skillshare.css">
+  <link rel="stylesheet" href="./css/recommend.css">
+
+  <!-- Optional JavaScript -->
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="./js/jquery-3.2.1.min.js"></script>
+  <script src="./js/popper-1.12.9.min.js"></script>
+  <script src="./js/bootstrap-4.0.0.min.js"></script>
+  <script defer src="./js/fontawesome-5.0.8.all.js"></script>
+  <script src="../common/underscore/underscore-min.js"></script>
+  <script src="../common/handlebars/handlebars.min.js"></script>
+  <script src="../common/moment/min/moment.min.js"></script>
+  <script src="../common/moment/locale/ja.js" charset="UTF-8"></script>
+  <script src="./js/personium.js"></script>
+  <script src="./js/skillshare.js"></script>
+  <script src="../data/DIY.js"></script>
+  <script src="../data/event.js"></script>
+  <script src="../data/volunteer.js"></script>
+
+  <title>おすすめスケジュール</title>
+</head>
+<script>
+  $(function() {
+    if (sessionStorage.sortedEvents) {
+      sortedEvents = getSortedEventsFromSession();
+    } else {
+      prepareSortedEvents();
+    }
+
+    sortedEventHash = _.indexBy(sortedEvents, '__id');
+    // test
+    recommendedSchedule = JSON.parse(sessionStorage.recommendedSchedule);
+    _.each(recommendedSchedule, function(event, index, list) {
+      if (event.type == "event") {
+        $.extend(event, sortedEventHash[event.__id]);
+        console.log(event);
+      }
+    });
+    sessionStorage.sortedEvents = JSON.stringify(sortedEvents);
+
+
+    function prepareSortedEvents() {
+      // ../diy/
+      _.each(diyData.Events, function(event, index, list) {
+        let tempPath = event.image.replace('../img/', '/img/');
+        event.summary = event.summary || event.title;
+        event.image = '../' + diyData.path + tempPath;
+        tempPath = event.service.image.replace('../img/', '/img/');
+        event.serviceImage = '../' + diyData.path + tempPath;
+
+        // Example: "latitude": 34.65847,"longitude": 135.76814,
+        event.mapImage = '../' + diyData.path + '/img/map/' + event.latitude + '-' + event.longitude + '.png';
+      });
+      _.each(spaceSharingData.Events, function(event, index, list) {
+        let tempPath = event.image.replace('../img/', '/img/');
+        event.image = '../' + spaceSharingData.path + tempPath;
+        tempPath = event.service.image.replace('../img/', '/img/');
+        event.serviceImage = '../' + spaceSharingData.path + tempPath;
+        event.mapImage = '../' + spaceSharingData.path + '/img/map/' + event.latitude + '-' + event.longitude + '.png';
+      });
+      _.each(volunteer_appData.Events, function(event, index, list) {
+        let tempPath = event.image.replace('./img/', '/img/');
+        event.title = event.matchingName;
+        event.summary = event.summary || event.title;
+        event.detail = event.matchingDetail;
+        event.image = '../' + volunteer_appData.path + tempPath;
+        tempPath = event.service.image.replace('./img/', '/img/');
+        event.serviceImage = '../' + volunteer_appData.path + tempPath;
+        event.mapImage = '../' + volunteer_appData.path + '/img/map/' + event.latitude + '-' + event.longitude + '.png';
+      });
+
+      planList = [].concat(diyData.Events, spaceSharingData.Events, volunteer_appData.Events);
+      sortedEvents = _.sortBy(planList, function(event){
+        let tempDateTime = 0;
+        if (_.isEmpty(event.startDate)) {
+          tempDateTime = moment(event.calendars[0].useStartDatetime).valueOf();
+        } else {
+          tempDateTime = moment(event.startDate).valueOf();
+        }
+        return tempDateTime;
+      });
+      let planStatus = JSON.parse(sessionStorage.planStatus);
+      _.each(sortedEvents, function(event, index, list) {
+        event.__id = 'per-' + index;
+        event.start = event.startDate || event.calendars[0].useStartDatetime;
+        event.end = event.endDate || event.calendars[0].useEndDatetime;
+        event.planStatus = planStatus[index] || "pending";
+      });
+    };
+  });
+</script>
+<body>
+  <header class="top schedule-list">
+    <a class="header-btn pn-back-btn" href="main.html">
+      <div id="back_btn" class="pn-btn white">
+        <i class="fas fa-angle-left fa-2x icon"></i>
+      </div>
+    </a>
+    <div class="header-title">
+      <div class="title">おすすめスケジュール</div>
+    </div>
+    <button id="setting_btn" class="header-btn pn-btn"  onclick="javascript:location.href = 'data_manager.html';">
+      <i class="fas fa-cog fa-2x icon"></i>
+    </button>
+  </header>
+  <div class="sub-header">
+    <button id="prev-btn">
+      <i class="fas fa-caret-left fa-2x icon"></i>
+    </button>
+    <span>5/25(金)</span>
+    <button id="next-btn">
+      <i class="fas fa-caret-right fa-2x icon"></i>
+    </button>
+  </div>
+
+  <main class="h-footer schedule-list">
+
+    <div class="slider">
+      <div class="slide-set">
+        <div class="list">
+          <ul id="recommended-schedule" ></ul>
+
+          <script id="recommended-template" type="text/x-handlebars-template">
+            {{#each this}}
+
+            {{#if (eq type "home")}}
+            <!-- Start from home -->
+            <li class="time-list">
+              <div class="list-text">
+                {{time start}}
+              </div>
+            </li>
+            <li class="default-schedule schedule-list-s">
+              <div class="list-image">
+                <div class="list-thumbnail-xs">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="-14.78 -14.5 59.12 58">
+                    <defs>
+                      <style>
+                        .cls-1 {
+                          fill: none;
+                        }
+                      </style>
+                    </defs>
+                    <title>house</title>
+                    <g id="Layouts">
+                      <rect class="cls-1" width="59.12" height="58" />
+                      <path d="M15,.5A14.5,14.5,0,1,0,29.5,15,14.5,14.5,0,0,0,15,.5Zm9.92,21.57H17.38V15.32H12.62v6.74H5.08V13.49l9.54-7.86a.61.61,0,0,1,.76,0l9.32,7.68a.6.6,0,0,1,.21.46Z"
+                      />
+                    </g>
+                  </svg>
+                </div>
+              </div>
+              <div class="list-text">
+                <div class="title">
+                  {{#if summary}}
+                  {{title}}<span class="title-text">
+                  <br>{{summary}}</span>
+                  {{else}}
+                  {{title}}
+                  {{/if}}
+                </div>
+              </div>
+            </li>
+            <li class="time-list">
+              <div class="list-text">
+                {{time end}}
+              </div>
+            </li>
+            {{/if}}
+
+            <!-- Transportation -->
+            {{#if (eq type "transportation")}}
+            {{{transportation_html this}}}
+            {{/if}}
+            
+            <!-- travel -->
+            {{#if (eq type "ridesharing")}}
+            <a href="route-info.html?planStatus={{planStatus}}">
+            <li class="{{planStatus}}-schedule traffic schedule-list-s">
+              <div class="list-image">
+                <div class="list-thumbnail-xs"></div>
+              </div>
+              <div class="list-text">
+                <div class="title">
+                  {{title}}
+                  {{#if (eq planStatus "confirm")}}
+                  <span class="reserved batch">予約済</span>
+                  {{/if}}
+                </div>
+                <div class="etc_area">
+                  <div class="status">
+                    <img src="{{service.image}}" alt="car" style="width: 18px; height: 18px; vertical-align: -.20em;">
+                    <span>【{{service.name}}】</span>
+                  </div>
+                </div>
+              </div>
+            </li>
+            </a>
+            {{/if}}
+
+            <!-- Event -->
+            {{#if (eq type "event")}}
+            <li class="time-list">
+              <div class="list-text">
+                {{time start}}
+              </div>
+            </li>
+            <a href="recommend-info.html?eventId={{__id}}">
+            <li class="{{planStatus}}-schedule event schedule-list-m">
+              <div class="list-image">
+                <div class="list-thumbnail-s">
+                  <img src="{{image}}" class="list-thumbnail">
+                </div>
+              </div>
+              <div class="list-text">
+                <div class="title"><p class="ellipsis">
+                  {{summary}}
+                </p></div>
+                <div class="etc_area">
+                  <div class="status">
+                    <img src="{{serviceImage}}" style="width: 18px; height: 18px; vertical-align: -.25em;"><span>【{{service.name}}】</span>
+                  </div>
+                  <div class="evaluation">
+                    {{#if (eq planStatus "consideration")}}
+                    <i class="fa fa-star fa-2x icon active"></i>
+                    {{else}}
+                    <i class="fa fa-star fa-2x icon"></i>
+                    {{/if}}
+                    <span>25</span>
+                    {{#if (eq planStatus "confirm")}}
+                    <i class="fas fa-check-circle fa-2x icon active"></i>
+                    {{else}}
+                    <i class="fas fa-check-circle fa-2x icon"></i>
+                    {{/if}}
+                    <span>123</span>
+                  </div>
+                </div>
+              </div>
+            </li>
+            </a>
+            <li class="time-list">
+              <div class="list-text">
+                {{time end}}
+              </div>
+            </li>
+            {{/if}}
+
+            {{#if (eq type "PR")}}
+            <!-- lunch -->
+            <li class="time-list">
+              <div class="list-text">
+                {{time start}}
+              </div>
+            </li>
+            <li class="{{planStatus}}-schedule event schedule-list-m">
+              <div class="list-image">
+                <div class="list-thumbnail-s">
+                  <img src="{{image}}" class="list-thumbnail">
+                </div>
+              </div>
+              <div class="list-text">
+                <div class="title">
+                  <span class="title-text"> 【{{title}}】
+                    <br> {{summary}}</span>
+                  <button class="delete-btn">×</button>
+                </div>
+                <div class="etc_area">
+                  <div class="status">
+                    【{{service.name}}】
+                  </div>
+                </div>
+              </div>
+            </li>
+            <li class="time-list">
+              <div class="list-text">
+                {{time end}}
+              </div>
+            </li>
+            {{/if}}
+            {{/each}}
+
+
+
+            <!--  back to home -->
+            <li class="time-list">
+              <div class="list-text">
+                18:20
+              </div>
+            </li>
+            <li class="default-schedule schedule-list-s">
+              <div class="list-image">
+                <div class="list-thumbnail-xs">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="-14.78 -14.5 59.12 58">
+                    <defs>
+                      <style>
+                        .cls-1 {
+                          fill: none;
+                        }
+                      </style>
+                    </defs>
+                    <title>car</title>
+                    <g id="Layouts">
+                      <rect class="cls-1" width="59.12" height="58" />
+                      <path d="M15,.5A14.5,14.5,0,1,0,29.5,15,14.5,14.5,0,0,0,15,.5Zm9.92,21.57H17.38V15.32H12.62v6.74H5.08V13.49l9.54-7.86a.61.61,0,0,1,.76,0l9.32,7.68a.6.6,0,0,1,.21.46Z"
+                      />
+                    </g>
+                  </svg>
+                </div>
+              </div>
+              <div class="list-text">
+                <div class="title">
+                  自宅
+                </div>
+              </div>
+            </li>
+            <li class="list-footer">
+            </li>
+          </script>
+          <script>
+              $(function() {
+                Handlebars.registerHelper({
+                  'eq': function(v1, v2) {
+                    return v1 == v2;
+                  },
+                  'time': function(date) {
+                    return moment(date).format('H:mm');
+                  },
+                  'ff_date': function(date) {
+                    // For My Data Japan May 25th
+                    let dateFF = moment("2018-05-25T09:00:00+09:00");
+                    return dateFF.isSame(moment(date), 'day');
+                  },
+                  'transportation_html': function(object) {
+                    let title = Handlebars.escapeExpression(object.title);
+                    let distance = Handlebars.escapeExpression(object.distance);
+                    return new Handlebars.SafeString(
+                      [
+                      "<li class='default-schedule traffic schedule-list-s'>",
+                        "<div class='list-image'>",
+                          "<div class='list-thumbnail-xs'>",
+                          "</div>",
+                        "</div>",
+                        "<div class='list-text'>",
+                          "<div class='title'>",
+                            title,
+                          "</div>",
+                          "<div class='etc_area'>",
+                            "<div class='status'>",
+                              distance,
+                            "</div>",
+                          "</div>",
+                        "</div>",
+                      "</li>"].join("")
+                    )
+                  }
+                });
+                var source = $("#recommended-template").text();
+                var template = Handlebars.compile(source);
+                //var html = template(sortedEventHash);
+                var html = template(recommendedSchedule);
+                $("#recommended-schedule").append(html);
+              });
+          </script>
+        </div>
+
+      </div>
+    </div>
+
+
+  </main>
+
+  <footer class="schedule-list">
+    <button class="current" onclick="javascript:location.href = 'recommend.html';">
+      <i class="fas fa-calendar-alt fa-2x icon"></i>
+      <div class="icon-text">おすすめ</div>
+    </button>
+    <button>
+      <i class="fa fa-bullhorn fa-2x icon"></i>
+      <div class="icon-text">ピックアップ</div>
+    </button>
+    <button onclick="javascript:location.href = 'plan.html';">
+      <i class="fas fa-clipboard fa-2x icon"></i>
+      <div class="icon-text">プラン一覧</div>
+    </button>
+    <button>
+      <i class="fas fa-star fa-2x icon"></i>
+      <div class="icon-text">検討中</div>
+    </button>
+    <button>
+      <i class="fas fa-check-circle fa-2x icon"></i>
+      <div class="icon-text">参加一覧</div>
+    </button>
+  </footer>
+</body>
+
+</html>

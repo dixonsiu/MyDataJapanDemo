@@ -1,0 +1,559 @@
+<!doctype html>
+<html lang="ja">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link href='./css/bootstrap-4.0.0.min.css' rel='stylesheet' type='text/css'>
+  <link href="./css/fontawesone-5.0.8.all.css" rel="stylesheet">
+  <link rel="stylesheet" href="./css/personium.css">
+  <link rel="stylesheet" href="./css/skillshare.css">
+
+  <!-- Optional JavaScript -->
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="./js/jquery-3.2.1.min.js"></script>
+  <script src="./js/popper-1.12.9.min.js"></script>
+  <script src="./js/bootstrap-4.0.0.min.js"></script>
+  <script defer src="./js/fontawesome-5.0.8.all.js"></script>
+  <script src="../common/underscore/underscore-min.js"></script>
+  <script src="../common/handlebars/handlebars.min.js"></script>
+  <script src="../common/moment/min/moment.min.js"></script>
+  <script src="../common/moment/locale/ja.js" charset="UTF-8"></script>
+  <script src="./js/personium.js"></script>
+  <script src="./js/skillshare.js"></script>
+  <script src="../data/DIY.js"></script>
+  <script src="../data/event.js"></script>
+  <script src="../data/volunteer.js"></script>
+
+  <title>おすすめスケジュール</title>
+</head>
+<script>
+  $(function() {
+    // ../diy/
+    _.each(diyData.Events, function(event, index, list) {
+      let tempPath = event.image.replace('../img/', '/img/');
+      event.image = '../' + diyData.path + tempPath;
+      tempPath = event.service.image.replace('../img/', '/img/');
+      event.serviceImage = '../' + diyData.path + tempPath;
+
+      // Example: "latitude": 34.65847,"longitude": 135.76814,
+      event.mapImage = '../' + diyData.path + '/img/map/' + event.latitude + '-' + event.longitude + '.png';
+    });
+    _.each(spaceSharingData.Events, function(event, index, list) {
+      let tempPath = event.image.replace('../img/', '/img/');
+      event.image = '../' + spaceSharingData.path + tempPath;
+      tempPath = event.service.image.replace('../img/', '/img/');
+      event.serviceImage = '../' + spaceSharingData.path + tempPath;
+      event.mapImage = '../' + spaceSharingData.path + '/img/map/' + event.latitude + '-' + event.longitude + '.png';
+    });
+    _.each(volunteer_appData.Events, function(event, index, list) {
+      let tempPath = event.image.replace('./img/', '/img/');
+      event.image = '../' + volunteer_appData.path + tempPath;
+      tempPath = event.service.image.replace('../img/', '/img/');
+      event.serviceImage = '../' + volunteer_appData.path + tempPath;
+      event.mapImage = '../' + volunteer_appData.path + '/img/map/' + event.latitude + '-' + event.longitude + '.png';
+    });
+
+    planList = [].concat(diyData.Events, spaceSharingData.Events, volunteer_appData.Events);
+    sortedEvents = _.sortBy(planList, function(event){
+      let tempDateTime = 0;
+      if (_.isEmpty(event.startDate)) {
+        tempDateTime = moment(event.calendars[0].useStartDatetime).valueOf();
+      } else {
+        tempDateTime = moment(event.startDate).valueOf();
+      }
+      return tempDateTime;
+    });
+    let planStatus = JSON.parse(sessionStorage.planStatus);
+    _.each(sortedEvents, function(event, index, list) {
+      event.__id = 'per-' + index;
+      event.start = event.startDate || event.calendars[0].useStartDatetime;
+      event.end = event.endDate || event.calendars[0].useEndDatetime;
+      event.planStatus = planStatus[index] || "pending";
+    });
+    sortedEventHash = _.indexBy(sortedEvents, '__id');
+    sessionStorage.sortedEvents = JSON.stringify(sortedEvents);
+  });
+</script>
+<body>
+  <header class="top schedule-list">
+    <div class="header-title">
+      <div class="title">おすすめスケジュール</div>
+    </div>
+    <button id="setting_btn" class="header-btn pn-btn">
+      <i class="fas fa-cog fa-2x icon"></i>
+    </button>
+  </header>
+  <div class="sub-header">
+    <button id="prev-btn">
+      <i class="fas fa-caret-left fa-2x icon"></i>
+    </button>
+    <span>5/18(金)</span>
+    <button id="next-btn">
+      <i class="fas fa-caret-right fa-2x icon"></i>
+    </button>
+  </div>
+
+  <main class="h-footer schedule-list">
+
+    <div class="slider">
+      <div class="slide-set">
+        <div class="list">
+          <ul id="recommended-schedule" ></ul>
+
+          <script id="recommended-template" type="text/x-handlebars-template">
+            <!-- Start from home -->
+            <li class="time-list">
+              <div class="list-text">
+                8:00
+              </div>
+            </li>
+            <li class="default-schedule schedule-list-s">
+              <div class="list-image">
+                <div class="list-thumbnail-xs">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="-14.78 -14.5 59.12 58">
+                    <defs>
+                      <style>
+                        .cls-1 {
+                          fill: none;
+                        }
+                      </style>
+                    </defs>
+                    <title>car</title>
+                    <g id="Layouts">
+                      <rect class="cls-1" width="59.12" height="58" />
+                      <path d="M15,.5A14.5,14.5,0,1,0,29.5,15,14.5,14.5,0,0,0,15,.5Zm9.92,21.57H17.38V15.32H12.62v6.74H5.08V13.49l9.54-7.86a.61.61,0,0,1,.76,0l9.32,7.68a.6.6,0,0,1,.21.46Z"
+                      />
+                    </g>
+                  </svg>
+                </div>
+              </div>
+              <div class="list-text">
+                <div class="title">
+                  自宅
+                </div>
+              </div>
+            </li>
+
+            <!-- travel -->
+            <li class="time-list">
+              <div class="list-text">
+                8:30
+              </div>
+            </li>
+            <li class="confirm-schedule traffic schedule-list-s">
+              <div class="list-image">
+                <div class="list-thumbnail-xs">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 59.12 58">
+                    <defs>
+                      <style>
+                        .cls-1 {
+                          fill: none;
+                        }
+                      </style>
+                    </defs>
+                    <title>car</title>
+                    <g id="Layouts">
+                      <rect class="cls-1" width="59.12" height="58" />
+                      <path d="M44.41,26.12,42.2,22.61a4.08,4.08,0,0,0-3.45-1.91H28.47a6.44,6.44,0,0,0-4.6,1.93l-2.93,3-7,1.62a2.58,2.58,0,0,0-2,2.51V32.5A1.07,1.07,0,0,0,13,33.57h3.72c0,.07,0,.15,0,.22a3.5,3.5,0,0,0,7,0c0-.07,0-.15,0-.22h11c0,.07,0,.15,0,.22a3.5,3.5,0,0,0,7,0c0-.07,0-.15,0-.22h2.39a1.07,1.07,0,0,0,1.07-1.07V28.75A4.93,4.93,0,0,0,44.41,26.12ZM20.24,35.19a1.39,1.39,0,1,1,1.39-1.39A1.39,1.39,0,0,1,20.24,35.19Zm8.85-8.8h-6.3l2.41-2.46a4.62,4.62,0,0,1,3.28-1.37h.62v3.84Zm7.19,0H30.71V22.55h5.57Zm1.94,8.8a1.39,1.39,0,1,1,1.39-1.39A1.4,1.4,0,0,1,38.22,35.19Zm-.32-8.8V22.55h.85a2.21,2.21,0,0,1,1.89,1l1.76,2.79H37.9Z"
+                      />
+                    </g>
+                  </svg>
+                </div>
+              </div>
+              <div class="list-text">
+                <div class="title">
+                  ライドシェア
+                  <span class="reserved batch">予約済</span>
+                </div>
+                <div class="etc_area">
+                  <div class="status">
+                    15km　一人当たり:￥800　同乗人数:満席
+                  </div>
+                </div>
+              </div>
+            </li>
+
+            <!-- Event -->
+
+            
+            <li class="time-list">
+              <div class="list-text">
+                {{time per-1.start}}
+              </div>
+            </li>
+            <li class="confirm-schedule event schedule-list-m">
+              <div class="list-image">
+                <div class="list-thumbnail-s">
+                  <img src="{{per-1.serviceImage}}" class="list-thumbnail">
+                </div>
+              </div>
+              <div class="list-text">
+                <div class="title">
+                  {{per-1.title}}
+                </div>
+                <div class="etc_area">
+                  <div class="status">
+                    【{{per-1.service.name}}】
+                  </div>
+                  <div class="evaluation">
+                    <i class="fa fa-star fa-2x icon"></i>
+                    <span>25</span>
+                    <i class="fas fa-check-circle fa-2x icon active"></i>
+                    <span>123</span>
+                  </div>
+                </div>
+              </div>
+            </li>
+
+            <!-- travel -->
+            <li class="time-list">
+              <div class="list-text">
+                {{time per-1.end}}
+              </div>
+            </li>
+            <li class="pending-schedule traffic schedule-list-s">
+              <div class="list-image">
+                <div class="list-thumbnail-xs">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 59.12 58">
+                    <defs>
+                      <style>
+                        .cls-1 {
+                          fill: none;
+                        }
+                      </style>
+                    </defs>
+                    <title>car</title>
+                    <g id="Layouts">
+                      <rect class="cls-1" width="59.12" height="58" />
+                      <path d="M44.41,26.12,42.2,22.61a4.08,4.08,0,0,0-3.45-1.91H28.47a6.44,6.44,0,0,0-4.6,1.93l-2.93,3-7,1.62a2.58,2.58,0,0,0-2,2.51V32.5A1.07,1.07,0,0,0,13,33.57h3.72c0,.07,0,.15,0,.22a3.5,3.5,0,0,0,7,0c0-.07,0-.15,0-.22h11c0,.07,0,.15,0,.22a3.5,3.5,0,0,0,7,0c0-.07,0-.15,0-.22h2.39a1.07,1.07,0,0,0,1.07-1.07V28.75A4.93,4.93,0,0,0,44.41,26.12ZM20.24,35.19a1.39,1.39,0,1,1,1.39-1.39A1.39,1.39,0,0,1,20.24,35.19Zm8.85-8.8h-6.3l2.41-2.46a4.62,4.62,0,0,1,3.28-1.37h.62v3.84Zm7.19,0H30.71V22.55h5.57Zm1.94,8.8a1.39,1.39,0,1,1,1.39-1.39A1.4,1.4,0,0,1,38.22,35.19Zm-.32-8.8V22.55h.85a2.21,2.21,0,0,1,1.89,1l1.76,2.79H37.9Z"
+                      />
+                    </g>
+                  </svg>
+                </div>
+              </div>
+              <div class="list-text">
+                <div class="title">
+                  ライドシェア
+                  <span class="pending batch">要予約</span>
+                </div>
+                <div class="etc_area">
+                  <div class="status">
+                    15.5km　一人当たり:￥700　同乗人数:2/5
+                  </div>
+                </div>
+              </div>
+            </li>
+
+            <!-- lunch -->
+            <li class="time-list">
+              <div class="list-text">
+                11:30
+              </div>
+            </li>
+            <li class="pending-schedule event schedule-list-m">
+              <div class="list-image">
+                <div class="list-thumbnail-s">
+                  <img src="./img/R-01.JPG" class="list-thumbnail">
+                </div>
+              </div>
+              <div class="list-text">
+                <div class="title">
+                  <span class="title-text"> 【おすすめランチ】
+                    <br> かつおの磯野</span>
+                  <button class="delete-btn">×</button>
+                </div>
+                <div class="etc_area">
+                  <div class="status">
+                    【PR】
+                  </div>
+                </div>
+              </div>
+            </li>
+
+            <!-- afternoon events -->
+            <li class="time-list">
+              <div class="list-text">
+                12:45
+              </div>
+            </li>
+            <li class="default-schedule traffic schedule-list-s">
+              <div class="list-image">
+                <div class="list-thumbnail-xs">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 59.12 58">
+                    <defs>
+                      <style>
+                        .cls-1 {
+                          fill: none;
+                        }
+                      </style>
+                    </defs>
+                    <title>walk</title>
+                    <g id="Layouts">
+                      <rect class="cls-1" width="59.12" height="58" />
+                      <path d="M28.1,19.68a2.34,2.34,0,1,0-2.34-2.34A2.34,2.34,0,0,0,28.1,19.68Z" />
+                      <path d="M37,26.39l-1.55-2.33A4.33,4.33,0,0,0,34,22.72l-3-1.7a2.58,2.58,0,0,0-1.51-.35l-1.46.2a2.17,2.17,0,0,0-1.38.77l-2.77,2.95-2.54.94a1,1,0,0,0-.59,1.19v0a1,1,0,0,0,1.14.65l2.07-.48a4.32,4.32,0,0,0,1.44-.63l1.44-1,.51,3.86a1.3,1.3,0,0,1-.16.82l-4.31,7.48A1.12,1.12,0,0,0,23.24,39l0,0a1.12,1.12,0,0,0,1.48-.33l4.81-6.88L31,34.73a2.17,2.17,0,0,0,.42.58l3.23,3.16a1.09,1.09,0,0,0,1.48,0l.05,0a1.09,1.09,0,0,0,.09-1.55l-2.73-3L32.1,28.51h0l-.43-4.2,1.5.68,2.41,2.53a.89.89,0,0,0,1.15.12l0,0A.89.89,0,0,0,37,26.39Z"
+                      />
+                    </g>
+                  </svg>
+                </div>
+              </div>
+              <div class="list-text">
+                <div class="title">
+                  徒歩
+                </div>
+                <div class="etc_area">
+                  <div class="status">
+                    300M
+                  </div>
+                </div>
+              </div>
+            </li>
+            <li class="time-list">
+              <div class="list-text">
+                {{time per-4.start}}
+              </div>
+            </li>
+            <li class="consideration-schedule event schedule-list-l">
+              <div class="list-image">
+                <div class="list-thumbnail-s">
+                  <img src="{{per-4.serviceImage}}" class="list-thumbnail">
+                </div>
+              </div>
+              <div class="list-text">
+                <div class="title">
+                  {{per-4.matchingName}}
+                </div>
+                <div class="etc_area">
+                  <div class="status">
+                    【{{per-4.service.name}}】
+                  </div>
+                  <div class="evaluation">
+                    <i class="fa fa-star fa-2x icon active"></i>
+                    <span>30</span>
+                    <i class="fas fa-check-circle fa-2x icon"></i>
+                    <span>43</span>
+                  </div>
+                </div>
+              </div>
+            </li>
+
+            <li class="time-list">
+              <div class="list-text">
+                {{time per-4.end}}
+              </div>
+            </li>
+            <li class="default-schedule schedule-list-s">
+              <div class="list-image">
+                <div class="list-thumbnail-xs ic-thumbnail">
+                  <img class="img-fluid" src="img/calender@3x.png" alt="カレンダー">
+                </div>
+              </div>
+              <div class="list-text">
+                <div class="title">
+                  休憩時間
+                </div>
+              </div>
+            </li>
+
+            <li class="time-list">
+              <div class="list-text">
+                15:30
+              </div>
+            </li>
+            <li class="default-schedule traffic schedule-list-s">
+              <div class="list-image">
+                <div class="list-thumbnail-xs">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 59.12 58">
+                    <defs>
+                      <style>
+                        .cls-1 {
+                          fill: none;
+                        }
+                      </style>
+                    </defs>
+                    <title>walk</title>
+                    <g id="Layouts">
+                      <rect class="cls-1" width="59.12" height="58" />
+                      <path d="M28.1,19.68a2.34,2.34,0,1,0-2.34-2.34A2.34,2.34,0,0,0,28.1,19.68Z" />
+                      <path d="M37,26.39l-1.55-2.33A4.33,4.33,0,0,0,34,22.72l-3-1.7a2.58,2.58,0,0,0-1.51-.35l-1.46.2a2.17,2.17,0,0,0-1.38.77l-2.77,2.95-2.54.94a1,1,0,0,0-.59,1.19v0a1,1,0,0,0,1.14.65l2.07-.48a4.32,4.32,0,0,0,1.44-.63l1.44-1,.51,3.86a1.3,1.3,0,0,1-.16.82l-4.31,7.48A1.12,1.12,0,0,0,23.24,39l0,0a1.12,1.12,0,0,0,1.48-.33l4.81-6.88L31,34.73a2.17,2.17,0,0,0,.42.58l3.23,3.16a1.09,1.09,0,0,0,1.48,0l.05,0a1.09,1.09,0,0,0,.09-1.55l-2.73-3L32.1,28.51h0l-.43-4.2,1.5.68,2.41,2.53a.89.89,0,0,0,1.15.12l0,0A.89.89,0,0,0,37,26.39Z"
+                      />
+                    </g>
+                  </svg>
+                </div>
+              </div>
+              <div class="list-text">
+                <div class="title">
+                  徒歩
+                </div>
+                <div class="etc_area">
+                  <div class="status">
+                    1km
+                  </div>
+                </div>
+              </div>
+            </li>
+
+            <li class="time-list">
+              <div class="list-text">
+                {{time per-9.start}}
+              </div>
+            </li>
+            <li class="pending-schedule event schedule-list-m">
+              <div class="list-image">
+                <div class="list-thumbnail-s">
+                  <img src="{{per-9.serviceImage}}" class="list-thumbnail">
+                </div>
+              </div>
+              <div class="list-text">
+                <div class="title">
+                  <span class="title-text">{{per-9.matchingName}}</span>
+                  <button class="delete-btn">×</button>
+                </div>
+                <div class="etc_area">
+                  <div class="status">
+                    【{{per-9.service.name}}】
+                  </div>
+                  <div class="evaluation">
+                    <i class="fa fa-star fa-2x icon"></i>
+                    <span>23</span>
+                    <i class="fas fa-check-circle fa-2x icon"></i>
+                    <span>12</span>
+                  </div>
+                </div>
+              </div>
+            </li>
+
+            
+
+            <li class="time-list">
+              <div class="list-text">
+                {{time per-9.end}}
+              </div>
+            </li>
+            <li class="default-schedule traffic schedule-list-s">
+              <div class="list-image">
+                <div class="list-thumbnail-xs">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 59.12 58">
+                    <defs>
+                      <style>
+                        .cls-1 {
+                          fill: none;
+                        }
+                      </style>
+                    </defs>
+                    <title>walk</title>
+                    <g id="Layouts">
+                      <rect class="cls-1" width="59.12" height="58" />
+                      <path d="M28.1,19.68a2.34,2.34,0,1,0-2.34-2.34A2.34,2.34,0,0,0,28.1,19.68Z" />
+                      <path d="M37,26.39l-1.55-2.33A4.33,4.33,0,0,0,34,22.72l-3-1.7a2.58,2.58,0,0,0-1.51-.35l-1.46.2a2.17,2.17,0,0,0-1.38.77l-2.77,2.95-2.54.94a1,1,0,0,0-.59,1.19v0a1,1,0,0,0,1.14.65l2.07-.48a4.32,4.32,0,0,0,1.44-.63l1.44-1,.51,3.86a1.3,1.3,0,0,1-.16.82l-4.31,7.48A1.12,1.12,0,0,0,23.24,39l0,0a1.12,1.12,0,0,0,1.48-.33l4.81-6.88L31,34.73a2.17,2.17,0,0,0,.42.58l3.23,3.16a1.09,1.09,0,0,0,1.48,0l.05,0a1.09,1.09,0,0,0,.09-1.55l-2.73-3L32.1,28.51h0l-.43-4.2,1.5.68,2.41,2.53a.89.89,0,0,0,1.15.12l0,0A.89.89,0,0,0,37,26.39Z"
+                      />
+                    </g>
+                  </svg>
+                </div>
+              </div>
+              <div class="list-text">
+                <div class="title">
+                  徒歩
+                </div>
+                <div class="etc_area">
+                  <div class="status">
+                    300M
+                  </div>
+                </div>
+              </div>
+            </li>
+
+
+            <!--  back to home -->
+            <li class="time-list">
+              <div class="list-text">
+                18:20
+              </div>
+            </li>
+            <li class="default-schedule schedule-list-s">
+              <div class="list-image">
+                <div class="list-thumbnail-xs">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="-14.78 -14.5 59.12 58">
+                    <defs>
+                      <style>
+                        .cls-1 {
+                          fill: none;
+                        }
+                      </style>
+                    </defs>
+                    <title>car</title>
+                    <g id="Layouts">
+                      <rect class="cls-1" width="59.12" height="58" />
+                      <path d="M15,.5A14.5,14.5,0,1,0,29.5,15,14.5,14.5,0,0,0,15,.5Zm9.92,21.57H17.38V15.32H12.62v6.74H5.08V13.49l9.54-7.86a.61.61,0,0,1,.76,0l9.32,7.68a.6.6,0,0,1,.21.46Z"
+                      />
+                    </g>
+                  </svg>
+                </div>
+              </div>
+              <div class="list-text">
+                <div class="title">
+                  自宅
+                </div>
+              </div>
+            </li>
+            <li class="list-footer">
+            </li>
+          </script>
+          <script>
+              $(function() {
+                Handlebars.registerHelper({
+                  'eq': function(v1, v2) {
+                    return v1 == v2;
+                  },
+                  'time': function(date) {
+                    return moment(date).format('H:mm');
+                  },
+                  'ff_date': function(date) {
+                    // For FF2018 May 18th
+                    let dateFF = moment("2018-05-18T09:00:00+09:00");
+                    return dateFF.isSame(moment(date), 'day');
+                  }
+                });
+                var source = $("#recommended-template").text();
+                var template = Handlebars.compile(source);
+                var html = template(sortedEventHash);
+                $("#recommended-schedule").html(html);
+              });
+          </script>
+        </div>
+
+      </div>
+    </div>
+
+
+  </main>
+
+  <footer class="schedule-list">
+    <button class="current" onclick="javascript:location.href = 'recommend.html';">
+      <i class="fas fa-calendar-alt fa-2x icon"></i>
+      <div class="icon-text">おすすめ</div>
+    </button>
+    <button onclick="javascript:location.href = 'pickup.html';">
+      <i class="fa fa-bullhorn fa-2x icon"></i>
+      <div class="icon-text">ピックアップ</div>
+    </button>
+    <button onclick="javascript:location.href = 'plan.html';">
+      <i class="fas fa-clipboard fa-2x icon"></i>
+      <div class="icon-text">プラン一覧</div>
+    </button>
+    <button>
+      <i class="fas fa-star fa-2x icon"></i>
+      <div class="icon-text">検討中</div>
+    </button>
+    <button>
+      <i class="fas fa-check-circle fa-2x icon"></i>
+      <div class="icon-text">参加一覧</div>
+    </button>
+  </footer>
+</body>
+
+</html>

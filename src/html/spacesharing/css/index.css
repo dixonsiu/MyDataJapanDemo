@@ -1,0 +1,49 @@
+/* Copyright FUJITSU LIMITED 2016-2017 */
+.top-img{
+  width: 100%;
+  margin-bottom: 36px;
+}
+
+.top-title{
+  font-size: 32px;
+  color: #51736D;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.top-contents{
+  font-size: 16px;
+  color: #51736D;
+  text-align: center;
+  margin-bottom: 100px;
+}
+
+.living{
+  text-align: center;
+  width: 200px;
+  height: 48px;
+  margin-bottom: 24px;
+}
+
+.event{
+  text-align: center;
+  width: 200px;
+  height: 48px;
+  margin-bottom: 56px;
+}
+
+.login{
+  font-size: 16px;
+  color: #51736D;
+  text-decoration: underline;
+  text-decoration-color: #51736D;
+}
+
+.top-img2{
+  width: 8%;
+  margin-left: 85%;
+}
+
+.center{
+  text-align: center;
+}

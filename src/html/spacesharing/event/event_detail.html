@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>イベント詳細・予約画面</title>
+
+  <link href="../../common/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="../../common/jquery/dist/jquery.min.js"></script>
+  <link href="../css/template.css" rel="stylesheet">
+  <link href="../css/event_detail.css" rel="stylesheet">
+  <script type="text/javascript" src="../js/template.js"></script>
+  <script type="text/javascript" src="../js/event_detail_map.js"></script>
+  <script src="../../data/event.js"></script>
+  <link rel="stylesheet" href="../../common/leaflet/dist/leaflet.css">
+  <script src="../../common/leaflet/dist/leaflet.js"></script>
+  <script src="../../common/moment/min/moment.min.js"></script>
+  <script src="../../common/moment/locale/ja.js" charset="UTF-8"></script>
+</head>
+
+<body>
+  <script>
+    header();
+  </script>
+
+  <div class="main">
+    <div class="img">
+      <img src="" class="detail-img-l">
+    </div>
+
+    <div class="title text-500 color-second">
+    </div>
+
+    <div class="event-text">
+      <p class="text-400 event_text">
+      </p>
+    </div>
+
+    <div class="contents">
+      <span class="mark color-second"></span>
+      <span class="item text-400">開催場所</span>
+      <p class="contents-text text-400 event_place">
+      </p>
+    </div>
+
+    <div class="contents">
+      <span class="mark color-second"></span>
+      <span class="item">開催日時</span>
+      <span class="contents-text time"></span>
+    </div>
+
+    <div class="contents">
+      <span class="mark color-second"></span>
+      <span class="item">現在の募集件数</span>
+      <span class="contents-text people"></span>
+    </div>
+
+    <div class="contents">
+      <span class="mark color-second"></span>
+      <span class="item">参加費用</span>
+      <span class="contents-text price"></span>
+    </div>
+
+    <div class="contents">
+      <span class="mark color-second"></span>
+      <span class="item">お問合せ先</span>
+      <span class="contents-text phoneNumber"></span>
+    </div>
+
+    <div class="map-contents">
+      <span class="mark color-second"></span> 地図
+    </div>
+
+    <div id="map" class="map">
+      <script>
+        var arg = new Object;
+        url = location.search.substring(1).split('&');
+
+        for (i = 0; url[i]; i++) {
+          var k = url[i].split('=');
+          arg[k[0]] = k[1];
+        }
+
+        var event = spaceSharingData.Events[arg.event_id];
+        map(event.latitude, event.longitude);
+      </script>
+    </div>
+
+    <div class="reservation">
+      <a href="../reservation_complete.html">
+        <button class="btn-type2 reservation-btn">参加する</button>
+      </a>
+    </div>
+  </div>
+
+  <script>
+    footer();
+  </script>
+
+
+  <script>
+    var arg = new Object;
+    url = location.search.substring(1).split('&');
+
+    for (i = 0; url[i]; i++) {
+      var k = url[i].split('=');
+      arg[k[0]] = k[1];
+    }
+
+    var id = arg.id;
+    var event_id = arg.event_id;
+
+    var eventData = spaceSharingData.Events[event_id];
+
+    var img = eventData.image;
+    var title = eventData.title;
+    var event_text = eventData.detail.replace(/\n/g, '<br>');
+    var address = '〒' + eventData.postalCode + '<br>' + eventData.address;
+    var place = address + '<br>' + eventData.place;
+    var start = moment(eventData.startDate).format('M月D日 H:mm');
+    var end = moment(eventData.endDate).format('H:mm');
+    var time = start + " - " + end;
+    var people = eventData.recruitmentNumber + "件";
+    var price = eventData.price + "円";
+    var phoneNumber = eventData.phoneNumber;
+
+    $(".detail-img-l").attr("src", img);
+    $(".title").append(title);
+    $(".event_text").html(event_text);
+    $(".event_place").append(place);
+    $(".time").append(time);
+    $(".people").append(people);
+    $(".price").append(price);
+    $(".phoneNumber").append(phoneNumber);
+
+
+    $(".living1").attr("href", "../living/living_detail.html?id=1&event_id=" + event_id);
+    $(".living2").attr("href", "../living/living_detail.html?id=2&event_id=" + event_id);
+    $(".living3").attr("href", "../living/living_detail.html?id=3&event_id=" + event_id);
+  </script>
+
+</body>
+
+</html>

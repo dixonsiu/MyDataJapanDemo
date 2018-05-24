@@ -1,0 +1,289 @@
+.modal-dialog {
+  width: 80%;
+}
+
+/* フォーム 装飾 */
+
+.control-heading {
+	font-size: 14px;
+	font-weight: normal;
+	color: #333333;
+}
+.text-notice {
+	margin-left: 16px;
+	color: #cc3e3e;
+}
+
+@media (min-width: 768px) {
+
+  .panel dl.dl-horizontal {
+		padding: 0;
+		margin-bottom: 0;
+	}
+	.panel dl.dl-horizontal dt {
+		margin-left: 15px;
+		padding: 10px 10px 0 0;
+		width: 30%;
+		font-weight: normal;
+		text-align: right;
+  }
+  
+	dl.dl-horizontal dt.control-heading{
+		font-size: 18px;
+	}
+	
+	dl.dl-horizontal dt.control-heading{
+		font-size: 18px;
+	}
+	dl.dl-horizontal dt.control-heading .notice-required,
+	dl.dl-horizontal dt.control-heading .notice-normal {
+		display: block;
+		width: auto;
+	}
+
+
+  .panel dl.dl-horizontal dd {
+		margin-bottom: 0;
+		margin-right: 15px;
+		padding: 10px 0 0 20px;
+		padding-bottom: 10px;
+		margin-left: 35%;
+		/* background-color: #ffffff; */
+	}
+	.panel dl.dl-horizontal dd .form-value {
+		font-size: 20px;
+		line-height: 30px;
+	}
+}
+
+
+/* ラジオボタン → custom02 */
+
+.custom02 input[type="radio"] {
+  display: none;
+}
+.custom02 .lever {
+  position: relative;
+  display: inline-block;
+  padding: 3px 3px 3px 20px;
+  cursor: pointer;
+  margin-left:-13px;
+}
+.custom02 .lever::before,
+.custom02 .lever::after {
+  position: absolute;
+  content: '';
+  top: 50%;
+  border-radius: 100%;
+  -webkit-transition: all .2s;
+  transition: all .2s;
+}
+.custom02 .lever::before {
+  left: 0;
+  width: 14px;
+  height: 14px;
+  margin-top: -8px;
+  background: #f3f3f3;
+  border: 1px solid #ccc;
+}
+.custom02 .lever:hover::before {
+  background: #fff;
+}
+.custom02 .lever::after {
+  opacity: 0;
+  left: 3px;
+  width: 8px;
+  height: 8px;
+  margin-top: -5px;
+  /*background: #00632e;*/
+  background: #3498db;
+  -webkit-transform: scale(2);
+  transform: scale(2);
+}
+.custom02 input[type="radio"]:checked + .lever::before {
+  background: #fff;
+  /*border: 1px solid #00632e;*/
+  border: 1px solid #3498db;
+}
+.custom02 input[type="radio"]:checked + .lever::after {
+  opacity: 1;
+  -webkit-transform: scale(1);
+  transform: scale(1);
+}
+
+  /* チェックボックス → custom03 */
+
+.custom03 input[type=checkbox] {
+  display: none;
+}
+.custom03 .label-checkbox .lever{
+  -webkit-transition: background-color 0.2s linear;
+  transition: background-color 0.2s linear;
+  position: relative;
+  padding: 0 0 0 42px;
+  display:inline-block;
+  margin-left:-30px;
+  vertical-align: middle;
+  cursor: pointer;
+}
+.custom03 .label-checkbox:hover .lever:after {
+  /*border-color: #00632e;*/
+  border-color: #0171bd;
+}
+.custom03 .label-checkbox .lever:after {
+  -webkit-transition: border-color 0.2s linear;
+  transition: border-color 0.2s linear;
+  position: absolute;
+  top: 50%;
+  left: 15px;
+  display: block;
+  margin-top: -10px;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #ccc;
+  border-radius: 6px;
+  content: '';
+}
+.custom03 .label-checkbox .lever:before {
+  -webkit-transition: opacity 0.2s linear;
+  transition: opacity 0.2s linear;
+  position: absolute;
+  top: 50%;
+  left: 21px;
+  display: block;
+  margin-top: -7px;
+  width: 5px;
+  height: 9px;
+  /*border-right: 3px solid #00632e;*/
+  /*border-bottom: 3px solid #00632e;*/
+  border-right: 3px solid #0171bd;
+  border-bottom: 3px solid #0171bd;
+  content: '';
+  opacity: 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+.custom03 .label-checkbox input[type=checkbox]:checked +.lever:before {
+  opacity: 1;
+}
+
+/* Image upload dropzone */
+/*
+.dropzone {
+	width: 360;
+	height: 208;
+	border: 'thin dotted';
+} 
+*/
+/* .dropzone .innerContainer {
+	width: 360;
+	margin: 0 auto;
+	text-align: center;
+}
+.dropzone .imageContainer {
+	display: table-cell;
+	width: 360;
+	height: 208;
+	text-align: center;
+	vertical-align: middle;
+	padding: 6,
+} */
+.dropzoneImageContainer {
+	text-align: center;
+	display: table-cell;
+	vertical-align: middle;
+}
+#uploadImage {
+	width: 100%;
+	height: auto;
+	vertical-align: middle;
+	margin: 0 auto;
+}
+
+.dl-horizontal input[type="text"],
+.dl-horizontal textarea {
+	border: 1px solid #b2b2b2;
+	border-radius: 4px;
+}
+.dl-horizontal input[type="text"] {
+	height: 44px;
+}
+
+.dl-horizontal .date-picker input[type="text"]{
+	background-image: url('/img/sp_ico_date.png');
+	background-position: right 8px center;
+	background-repeat: no-repeat;
+}
+
+.dl-horizontal .list-radios {
+	margin: 0px;
+	padding: 12px 0px;
+	border-top: 1px solid #b2b2b2;
+	border-bottom: 1px solid #b2b2b2;
+}
+
+.dl-horizontal .list-radios .radio-item {
+	padding: 12px 0px;
+	line-height: 18px;
+	font-size: 18px;
+	color: #333333;
+}
+.dl-horizontal .list-radios .radio-item .lever {
+	padding: 0px;
+	padding-left: 22px;
+	font-weight: normal;
+}
+
+.dl-horizontal .list-checkboxes {
+	margin: 0px;
+	padding: 12px 0px;
+	border-top: 1px solid #b2b2b2;
+	border-bottom: 1px solid #b2b2b2;
+}
+.dl-horizontal .list-checkboxes .checkbox-item{
+	padding: 12px 0px;
+	line-height: 18px;
+	font-size: 18px;
+	color: #333333;
+}
+.dl-horizontal .list-checkboxes .checkbox-item .lever {
+	padding: 0px;
+	padding-left: 40px;
+	font-weight: normal;
+}
+
+.form-inline input {
+	width: 160px;
+	display: inline-block;
+	margin-right: 8px;
+}
+
+.button-area {
+	padding: 24px 16px;
+	border-top: 1px solid #b2b2b2;
+}
+
+@media (min-width: 768px) {
+	.dl-horizontal .list-radios {
+		margin: 0px;
+		padding: 12px 0px;
+		border: none;
+	}
+
+	.dl-horizontal .list-radios .radio-item {
+		line-height: 20px;
+		font-size: 20px;
+	}
+
+	.dl-horizontal .list-checkboxes {
+		margin: 0px;
+		padding: 12px 0px;
+		border: none;
+	}
+	
+	.dl-horizontal .list-checkboxes .checkbox-item{
+		line-height: 20px;
+		font-size: 20px;
+	}
+}
